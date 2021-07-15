@@ -1,15 +1,23 @@
 require('dotenv').config();
-import * as Twit from 'twit';
+import TwitterApi from 'twitter-api-v2';
 
-const T = new Twit({
-    consumer_key: process.env.CONSUMER_KEY ?? '',
-    consumer_secret: process.env.CONSUMER_SECRET ?? '',
+// Set up client with dotenv file/env variables
+const twitter = new TwitterApi({
+    appKey: process.env.CONSUMER_KEY ?? '',
+    appSecret: process.env.CONSUMER_SECRET ?? '',
+    // Following access tokens are not required if you are
+    // at part 1 of user-auth process (ask for a request token)
+    // or if you want a app-only client (see below)
+    accessToken: process.env.ACCESS_TOKEN ?? '',
+    accessSecret: process.env.ACCESS_TOKEN_SECRET ?? '',
+});
+const client = twitter.readWrite;
 
-    access_token: process.env.ACCESS_TOKEN ?? '',
-    access_token_secret: process.env.ACCESS_TOKEN_SECRET ?? '',
-    timeout_ms: 60 * 1000, // optional HTTP request timeout to apply to all requests.
-    strictSSL: true, // optional - requires SSL certificates to be valid.
-});
-T.get('search/tweets', { q: 'banana since:2011-07-11', count: 5 }, function (err, data, response) {
-    console.log(data);
-});
+// Top level async function so we can await in script
+(async () => {
+    const me = await client.currentUser();
+    console.log({ me });
+    const user = await client.v2.userByUsername('robfairclough');
+    console.log({ user });
+    await client.v2.follow(me.id_str, user.data.id);
+})().catch(console.log);
