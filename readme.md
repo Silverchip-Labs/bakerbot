@@ -16,4 +16,5 @@ To run this locally
     - ACCESS_TOKEN
     - ACCESS_TOKEN_SECRET
     - BEARER_TOKEN (maybe)
+    - GOOGLE_MAPS_API_KEY (if you want location based suggestions)
 4. Run `npm start` to run locally using ts-node.
