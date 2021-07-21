@@ -2,8 +2,10 @@ import { Client, PlacesNearbyRequest } from '@googlemaps/google-maps-services-js
 import { PlacesNearbyRanking } from '@googlemaps/google-maps-services-js/dist/places/placesnearby';
 
 const manchesterLatLng = { lat: 53.483959, lng: -2.244644 };
+let places: any[] = [];
 
 const getPlacesToEat = async () => {
+    if (places.length) return places;
     try {
         const gClient = new Client({});
         const placesRequest: PlacesNearbyRequest = {
@@ -19,6 +21,7 @@ const getPlacesToEat = async () => {
         const {
             data: { results },
         } = await gClient.placesNearby(placesRequest);
+        places = results;
         return results;
     } catch (e) {
         return [];
@@ -28,5 +31,5 @@ const getPlacesToEat = async () => {
 export const getPlaceToEat = async () => {
     const places = await getPlacesToEat();
     const index = Math.floor(Math.random() * places.length);
-    return places[index].name ?? 'Subway';
+    return places[index]?.name ?? 'Subway';
 };
