@@ -9,21 +9,21 @@ model.add(
     tf.layers.dense({
         inputShape: [512],
         activation: 'sigmoid',
-        units: 4,
+        units: 2,
     }),
 );
 model.add(
     tf.layers.dense({
-        inputShape: [4],
+        inputShape: [2],
         activation: 'sigmoid',
-        units: 4,
+        units: 2,
     }),
 );
 model.add(
     tf.layers.dense({
-        inputShape: [4],
+        inputShape: [2],
         activation: 'sigmoid',
-        units: 4,
+        units: 2,
     }),
 );
 // Compile the model
@@ -49,9 +49,7 @@ const encodeData = data => {
 const outputData = tf.tensor2d(
     trainingData.map(datum => [
         datum.intent === 'food' ? 1 : 0,
-        datum.intent === 'joke' ? 1 : 0,
-        datum.intent === 'question' ? 1 : 0,
-        datum.intent === 'compliment' ? 1 : 0,
+        datum.intent === 'no food' ? 1 : 0,
     ]),
 ); // Output: [1,0] or [0,1]
 
