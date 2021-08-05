@@ -26,8 +26,9 @@ import { analyze, detectQuestion } from './smartBaker';
     // Debug -------------------------------
     // const placeToEat = await getPlaceToEat();
     // const lunchSuggestion = formatReply(placeToEat);
-    // const isQuestion: boolean = await detectQuestion('@mbakerbot youre great bro');
-
+    // const isQuestion: boolean = await detectQuestion(
+    //     '@mbakerbot not sure what i want for lunch bro',
+    // );
     // console.log({ lunchSuggestion, isQuestion });
 
     // * Handle tweets from stream
@@ -44,13 +45,13 @@ import { analyze, detectQuestion } from './smartBaker';
         const placeToEat = await getPlaceToEat();
         const lunchSuggestion = formatReply(placeToEat);
 
-        // Simple:
+        // Simple question detection:
         // const isQuestion = tweet.text.includes('?')
 
-        // TensorFlow:
+        // TensorFlow question detection:
         const isQuestion: boolean = await detectQuestion(tweet.text);
+        console.log(`${isQuestion ? 'Question' : 'No question'} detected: ` + tweet.text);
 
-        console.log({ lunchSuggestion, isQuestion });
         if (isQuestion) {
             twitter.v1
                 .reply(lunchSuggestion, tweet.id)
