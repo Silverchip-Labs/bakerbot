@@ -1,11 +1,7 @@
-import { useState } from 'react';
 import * as tf from '@tensorflow/tfjs';
+import '@tensorflow/tfjs-node';
 import * as use from '@tensorflow-models/universal-sentence-encoder';
 import trainingData from './constants/bakerbot';
-
-const [isAnalyzing, setIsAnalyzing] = useState(false);
-const [analyzeError, setAnalyseError] = useState(null);
-const [result, setResult] = useState([]);
 
 const model = tf.sequential();
 // Add layers to the model
@@ -59,39 +55,33 @@ const outputData = tf.tensor2d(
     ]),
 ); // Output: [1,0] or [0,1]
 
-export const analyze = testingData => {
+export const analyze = async testingData => {
     console.log('Analyzing...');
-    setIsAnalyzing(true);
-    setAnalyseError(null);
 
-    Promise.all([encodeData(trainingData), encodeData(testingData)])
-        .then(data => {
-            const { 0: training_data, 1: testing_data } = data;
-            return model
-                .fit(training_data, outputData, { epochs: 200 })
-                .then(history => {
-                    return model.predict(testing_data).array();
-                    // model.predict(testing_data).print();
-                })
-                .then(data => {
-                    console.log('Success');
-                    console.log({ data });
-                    const formattedData = testingData.map((datum, i) => {
-                        return {
-                            ...datum,
-                            result: data[i],
-                        };
-                    });
-                    console.log({ formattedData });
-                    setIsAnalyzing(false);
-                    setResult(formattedData);
-                })
-                .catch(error => {
-                    console.log('Error');
-                    console.error({ error });
-                    setIsAnalyzing(false);
-                    setAnalyseError(error);
-                });
-        })
-        .catch(err => console.log('Prom Err:', err));
+    try {
+        const training_data = await encodeData(trainingData);
+        const testing_data = await encodeData(testingData);
+
+        const _ = await model.fit(training_data, outputData, { epochs: 200 });
+        const data = await model.predict(testing_data).array();
+
+        console.log('Success');
+        console.log({ data });
+        const formattedData = testingData.map((datum, i) => {
+            return {
+                ...datum,
+                result: data[i],
+            };
+        });
+        console.log({ formattedData });
+        return formattedData;
+    } catch (err) {
+        console.log('Catch Err:', err);
+    }
+};
+
+export const detectQuestion = async text => {
+    const analysis = await analyze([{ text }]);
+    if (analysis[0].result[0] > 0.5) return true;
+    return false;
 };

@@ -3,6 +3,7 @@ import TwitterApi from 'twitter-api-v2';
 import { formatReply } from './bakerTalk';
 import { getPlaceToEat } from './places';
 import { setupStream } from './twitter';
+import { analyze, detectQuestion } from './smartBaker';
 
 // ? Top level async function so we can await in script
 (async () => {
@@ -22,6 +23,13 @@ import { setupStream } from './twitter';
     // * Setting up a search stream, to listen for tweets directed at the bot.
     const stream = await setupStream(appTwitter, me);
 
+    // Debug -------------------------------
+    // const placeToEat = await getPlaceToEat();
+    // const lunchSuggestion = formatReply(placeToEat);
+    // const isQuestion: boolean = await detectQuestion('@mbakerbot youre great bro');
+
+    // console.log({ lunchSuggestion, isQuestion });
+
     // * Handle tweets from stream
     for await (const { data: tweet } of stream) {
         console.log({ tweet });
@@ -35,7 +43,14 @@ import { setupStream } from './twitter';
         // todo add ratings to suggestions
         const placeToEat = await getPlaceToEat();
         const lunchSuggestion = formatReply(placeToEat);
-        const isQuestion = tweet.text.includes('?');
+
+        // Simple:
+        // const isQuestion = tweet.text.includes('?')
+
+        // TensorFlow:
+        const isQuestion: boolean = await detectQuestion(tweet.text);
+
+        console.log({ lunchSuggestion, isQuestion });
         if (isQuestion) {
             twitter.v1
                 .reply(lunchSuggestion, tweet.id)
@@ -52,7 +67,7 @@ import { setupStream } from './twitter';
             try {
                 await appTwitter.v2.follow(me.id_str, user.data.id);
             } catch {
-                console.log('didnt work');
+                console.log('already following');
             }
         }
     }
