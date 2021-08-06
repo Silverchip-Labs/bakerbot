@@ -24,12 +24,12 @@ import { analyze, detectQuestion } from './smartBaker';
     const stream = await setupStream(appTwitter, me);
 
     // Debug -------------------------------
-    // const placeToEat = await getPlaceToEat();
-    // const lunchSuggestion = formatReply(placeToEat);
-    // const isQuestion: boolean = await detectQuestion(
-    //     '@mbakerbot not sure what i want for lunch bro',
-    // );
-    // console.log({ lunchSuggestion, isQuestion });
+    const placeToEat = await getPlaceToEat();
+    const lunchSuggestion = formatReply(placeToEat);
+    const isQuestion: boolean = await detectQuestion(
+        '@mbakerbot not sure what i want for lunch bro',
+    );
+    console.log({ lunchSuggestion, isQuestion });
 
     // * Handle tweets from stream
     for await (const { data: tweet } of stream) {
