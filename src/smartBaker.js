@@ -60,7 +60,7 @@ export const analyze = async testingData => {
         const training_data = await encodeData(trainingData);
         const testing_data = await encodeData(testingData);
 
-        const _ = await model.fit(training_data, outputData, { epochs: 200 });
+        await model.fit(training_data, outputData, { epochs: 200 });
         const data = await model.predict(testing_data).array();
 
         console.log('Success');
