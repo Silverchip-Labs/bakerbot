@@ -47,7 +47,8 @@ const foodTraining = [
     "i'd like",
     "what's for lunch",
     'feed me',
-    'recommend lunch for me'`what's your recommendation for dinner`,
+    'recommend lunch for me',
+    `what's your recommendation for dinner`,
     'wheres good to eat?',
     'what are you having for lunch',
 ];
